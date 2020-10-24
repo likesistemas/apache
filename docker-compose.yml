@@ -1,0 +1,34 @@
+version: '3.5'
+networks: 
+    apache:
+        name: apache
+        driver: bridge
+
+services:
+
+  app:
+    image: likesistemas/php:latest
+    container_name: apache_app
+    environment:
+      - PHP_NAME=apache_app
+    volumes:
+      - ./www/:/var/www/public/
+    networks:
+      - apache
+
+  apache:
+    build: .
+    container_name: apache_apache
+    environment:
+      - HOST_PHP=apache_app
+      - PORTA_PHP=9000
+    ports:
+      - 80:80
+    volumes:
+      - ./www/:/var/www/public/
+    links:
+      - app
+    depends_on:
+      - app
+    networks:
+      - apache

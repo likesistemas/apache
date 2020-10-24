@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+dockerize \
+    -template /usr/local/apache2/conf/extra/httpd-vhosts.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
+
+if [ -n "${HOST_PHP}" ]; then
+	dockerize \
+		-wait tcp://${HOST_PHP}:${PORTA_PHP} \
+		-timeout ${TIMEOUT_PHP} \
+	httpd-foreground
+else
+	httpd-foreground
+fi
