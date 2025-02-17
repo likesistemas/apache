@@ -1,4 +1,3 @@
-version: '3.5'
 networks: 
     apache:
         name: apache
@@ -17,17 +16,18 @@ services:
       - apache
 
   apache:
+    image: likesistemas/apache:dev
     build: .
     container_name: apache_apache
     environment:
       - HOST_PHP=apache_app
       - PORTA_PHP=9000
+      - SSL=true
     ports:
       - 80:80
+      - 443:443
     volumes:
       - ./www/:/var/www/public/
-    links:
-      - app
     depends_on:
       - app
     networks:

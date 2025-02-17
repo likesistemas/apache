@@ -1,8 +1,40 @@
 #!/bin/bash
 set -e
 
-dockerize \
-    -template /usr/local/apache2/conf/extra/httpd-vhosts.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
+step() {
+  echo -e "\e[30mnginx\e[0m >> \e[33m${1}\e[0m"
+}
+
+step "Configurando apache...";
+dockerize -template conf/extra/httpd-php.conf:conf/extra/httpd-php.conf
+
+sed -i -e 's/^#\(Include .*httpd-vhosts.conf\)/\1/' conf/httpd.conf;
+sed -i -e 's/^#\(LoadModule .*mod_rewrite.so\)/\1/'	conf/httpd.conf;
+sed -i -e 's/^#\(LoadModule .*mod_proxy.so\)/\1/'	conf/httpd.conf;
+sed -i -e 's/^#\(LoadModule .*mod_proxy_fcgi.so\)/\1/'	conf/httpd.conf;
+
+sed -i 's|DirectoryIndex index.html|DirectoryIndex index.php index.html|' conf/httpd.conf
+sed -i 's/^User daemon/User www-data/' conf/httpd.conf
+sed -i 's/^Group daemon/Group www-data/' conf/httpd.conf
+
+sed -i 's|DocumentRoot "/usr/local/apache2/htdocs"|DocumentRoot "/var/www/public/"|' conf/httpd.conf;
+sed -i 's|<Directory "/usr/local/apache2/htdocs">|<Directory "/var/www/public/">|' conf/httpd.conf;
+sed -i '/<Directory "\/var\/www\/public\/">/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' conf/httpd.conf;
+
+echo "Include conf/extra/httpd-php.conf" >> conf/httpd.conf;
+
+if [ "${SSL}" == "true" ]; then
+	step "Configurando SSL...";
+
+	dockerize \
+		-template conf/extra/httpd-ssl.conf:conf/extra/httpd-ssl.conf
+
+	sed -i \
+		-e 's/^#\(Include .*httpd-ssl.conf\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_ssl.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_socache_shmcb.so\)/\1/' \
+		conf/httpd.conf
+fi
 
 if [ -n "${HOST_PHP}" ]; then
 	dockerize \
