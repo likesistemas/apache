@@ -37,7 +37,7 @@ jobs:
         run: |
           CONTENT=$(curl -s "http://127.0.0.1/");
           CONTENT_PHP=$(curl -s "http://127.0.0.1/script.php");
-          CONTENT_REWRITE=$(curl -s "https://127.0.0.1/rewrite/apache.php");
+          CONTENT_REWRITE=$(curl -s "http://127.0.0.1/rewrite/apache.php");
           echo "CHAMADA HTTP NORMAL: ${CONTENT}";
           echo "CHAMADA HTTP PHP: ${CONTENT_PHP}";
           echo "CHAMADA HTTP REWRITE: ${CONTENT_REWRITE}";
@@ -56,6 +56,30 @@ jobs:
             echo "Chamada HTTP REWRITE retornou errado: ${CONTENT_REWRITE}"
             exit 1;
           fi
+
+      - name: Run tests in https
+        run: |
+            CONTENT=$(curl -s "https://127.0.0.1/");
+            CONTENT_PHP=$(curl -s "https://127.0.0.1/script.php");
+            CONTENT_REWRITE=$(curl -s "https://127.0.0.1/rewrite/apache.php");
+            echo "CHAMADA HTTP NORMAL: ${CONTENT}";
+            echo "CHAMADA HTTP PHP: ${CONTENT_PHP}";
+            echo "CHAMADA HTTP REWRITE: ${CONTENT_REWRITE}";
+  
+            if [ "${CONTENT}" != "html" ]; then
+              echo "Chamada HTTP NORMAL retornou errado: ${CONTENT}"
+              exit 1;
+            fi
+  
+            if [ "${CONTENT_PHP}" != "php" ]; then
+              echo "Chamada HTTP TRYFILES retornou errado: ${CONTENT_PHP}"
+              exit 1;
+            fi
+  
+            if [ "${CONTENT_REWRITE}" != "/rewrite/apache.php" ]; then
+              echo "Chamada HTTP REWRITE retornou errado: ${CONTENT_REWRITE}"
+              exit 1;
+            fi
 
   push:
     needs: test

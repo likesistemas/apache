@@ -19,6 +19,8 @@ ENV TIMEOUT_PHP=60s
 
 COPY httpd-vhosts.conf /usr/local/apache2/conf/extra/httpd-vhosts.conf
 COPY httpd-ssl.conf /usr/local/apache2/conf/extra/httpd-ssl.conf
+COPY httpd-php.conf /usr/local/apache2/conf/extra/httpd-php.conf
+
 COPY --from=ssl /ssl/server.crt /usr/local/apache2/conf/server.crt
 COPY --from=ssl /ssl/server.key /usr/local/apache2/conf/server.key
 RUN ls -la /usr/local/apache2/conf/
