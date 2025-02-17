@@ -7,19 +7,19 @@ step() {
 
 step "Configurando apache...";
 dockerize \
-    -template conf/extra/httpd-vhosts.conf:conf/extra/httpd-vhosts.conf \
-	-template conf/extra/httpd-vhosts-ssl.conf:conf/extra/httpd-vhosts-ssl.conf
+    -template conf/extra/httpd-vhosts.conf:conf/extra/httpd-vhosts.conf
 
 if [ "${SSL}" == "true" ]; then
 	step "Configurando SSL...";
+
+	dockerize \
+		-template conf/extra/httpd-ssl.conf:conf/extra/httpd-ssl.conf
 
 	sed -i \
 		-e 's/^#\(Include .*httpd-ssl.conf\)/\1/' \
 		-e 's/^#\(LoadModule .*mod_ssl.so\)/\1/' \
 		-e 's/^#\(LoadModule .*mod_socache_shmcb.so\)/\1/' \
 		conf/httpd.conf
-
-	echo "Include conf/extra/httpd-vhosts-ssl.conf" >> conf/httpd.conf;
 fi
 
 if [ -n "${HOST_PHP}" ]; then
