@@ -16,6 +16,7 @@ services:
       - apache
 
   apache:
+    image: likesistemas/apache:dev
     build: .
     container_name: apache_apache
     environment:
