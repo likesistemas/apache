@@ -59,9 +59,9 @@ jobs:
 
       - name: Run tests in https
         run: |
-            CONTENT=$(curl -s "https://127.0.0.1/");
-            CONTENT_PHP=$(curl -s "https://127.0.0.1/script.php");
-            CONTENT_REWRITE=$(curl -s "https://127.0.0.1/rewrite/apache.php");
+            CONTENT=$(curl -k -s "https://127.0.0.1/");
+            CONTENT_PHP=$(curl -k -s "https://127.0.0.1/script.php");
+            CONTENT_REWRITE=$(curl -k -s "https://127.0.0.1/rewrite/apache.php");
             echo "CHAMADA HTTP NORMAL: ${CONTENT}";
             echo "CHAMADA HTTP PHP: ${CONTENT_PHP}";
             echo "CHAMADA HTTP REWRITE: ${CONTENT_REWRITE}";
